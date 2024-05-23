@@ -13,6 +13,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the API script to the working directory
 COPY api.py .
 
+# Copy the other scripts to the working directory
+COPY firebase_helper.py .
+COPY misc_helper.py .
+
 # Expose the port on which the API will run
 EXPOSE 5000
 

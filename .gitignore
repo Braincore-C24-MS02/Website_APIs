@@ -1,1 +1,3 @@
 .venv/
+firestore-credentials.json
+.env
