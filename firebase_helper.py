@@ -1,9 +1,9 @@
 import firebase_admin
 import dotenv, os
-from firebase_admin import credentials, firestore, initialize_app
+from firebase_admin import credentials, firestore, initialize_app, storage
 from misc_helper import load_firebase_credentials
 
-def init_firestore(env_file):
+def init_firebase_app(env_file):
     dotenv.load_dotenv(dotenv_path=env_file)
 
     # Initialize the configs for the Firebase Admin SDK
@@ -15,6 +15,7 @@ def init_firestore(env_file):
     firebase_config['messagingSenderId'] = os.getenv('firebase_messagingSenderId')[1:-1]
     firebase_config['appId'] = os.getenv('firebase_appId')[1:-1]
     firebase_config['measurementId'] = os.getenv('firebase_measurementId')[1:-1]
+    firebase_config['serviceAccount'] = "firestore-credentials.json"
 
     cred_json = load_firebase_credentials(env_file)
     print(cred_json)
@@ -22,14 +23,41 @@ def init_firestore(env_file):
     cred = credentials.Certificate(cred_json)
 
     app = firebase_admin.initialize_app(credential=cred, options=firebase_config)
-
-    db = firestore.client(app)
     
+    return app
+
+def init_firestore(env_file, app = None):
+    if app is None:
+        app = init_firebase_app(env_file)
+    db = firestore.client(app)
     return db
 
-def add_data(collection_name, data ,db = None):
+def init_storage(env_file, app = None):
+    if app is None:
+        app = init_firebase_app(env_file)
+        print("App type: ", type(app))
+    storage_instance = storage.bucket(name="bangkit-capstone-dms.appspot.com", app=app)
+    return storage_instance
+
+def add_test_data(collection_name, data, db = None):
     if db is None:
         db = init_firestore('.env')
     # Add a new document with a generated ID
     db.collection(collection_name).add(data)
     print("Document added successfully")
+
+def add_driver_frame(bytes, driver_id, timestamp, storage = None):
+    if storage is None:
+        print("Storage initialized")
+        storage = init_storage('.env')
+    print(type(storage))
+    try:
+        filename = str(driver_id + "_" + timestamp + ".jpg")
+        destination_blob_path = "frames/" + filename
+        blob = storage.blob(destination_blob_path)
+        blob.upload_from_string(bytes, content_type='image/jpg')
+        blob.make_public()
+        print("File added successfully")
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"message": "Frame not added successfully"}

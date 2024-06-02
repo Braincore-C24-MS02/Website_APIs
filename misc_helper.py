@@ -18,3 +18,12 @@ def load_firebase_credentials(env_file):
     credentials['client_x509_cert_url'] = os.getenv('fc_client_x509_cert_url')[1:-1]
     credentials['universe_domain'] = os.getenv('fc_universe_domain')[1:-1]
     return credentials
+
+def parse_datetime(string):
+  # Split the string by delimiters
+  parts = string.split("T")
+  date = parts[0]
+  time = parts[1].split(".")[0]  # Get only time part before milliseconds
+
+  # Combine date and time with separator
+  return f"{date} {time}"
