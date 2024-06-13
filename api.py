@@ -56,6 +56,15 @@ async def get_data(collection, doc_id):
     except Exception as e:
         return HTTPException(status_code=400, detail=f"Error: {e}")
 
+# Get all documents from a collection
+@app.get("/get/list")
+async def get_collection(collection):
+    try:
+        data = get_collection_data(collection, db)
+        return {"data": data}
+    except Exception as e:
+        return HTTPException(status_code=400, detail=f"Error: {e}")
+
 if __name__ == "__main__":
     uvicorn.run(app, host='0.0.0.0', port=8000)
     

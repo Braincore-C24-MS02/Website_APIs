@@ -72,3 +72,16 @@ def get_data_from_firestore(collection, doc_id, db = None):
         return doc.to_dict()
     else:
         return {"message": "No such document!"}
+    
+def get_collection_data(collection, db=None):
+  if db is None:
+    db = init_firestore('.env')
+  collection_ref = db.collection_group(collection)
+  # Get all documents in the collection
+  docs = collection_ref.get()
+
+  try:
+    # Get data as dictionaries from each document snapshot
+    return [doc.to_dict() for doc in docs if doc.exists]
+  except Exception as e:
+    raise Exception(f"Error getting collection data: {e}")
