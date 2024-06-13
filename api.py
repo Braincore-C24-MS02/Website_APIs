@@ -1,5 +1,5 @@
 # For running the FastAPI server
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware 
 import uvicorn 
 import requests
@@ -28,15 +28,8 @@ storage = init_storage(env_file='.env', app=firebase_app)
 async def root():
     return {"message": "Hello from Fastapi"} 
 
-@app.get("/send/test-send-activity")
-async def add_test_data_to_firestore(collection, data):
-    # Example structure of the data
-    # data = {
-    #     "device-id": 1,
-    #     "is-active": False,
-    #     "message": "this is a test message sent from the FastAPI server",
-    #     "timestamp": "2021-09-01T12:00:00"
-    # }
+@app.post("/send/send-to-firestore")
+async def add_data_to_firestore(collection, data = Body(...)):
     add_test_data(collection_name=collection, data=data, db=db)
     return {"message": "Data added successfully"}
 
