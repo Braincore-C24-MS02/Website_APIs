@@ -46,18 +46,29 @@ def add_test_data(collection_name, data, db = None):
     db.collection(collection_name).add(data)
     print("Document added successfully")
 
-def add_driver_frame(bytes, driver_id, timestamp, storage = None):
+def add_driver_video(bytes, driver_id, timestamp, storage = None):
     if storage is None:
         print("Storage initialized")
         storage = init_storage('.env')
     print(type(storage))
     try:
-        filename = str(driver_id + "_" + timestamp + ".jpg")
+        filename = str(driver_id + "_" + timestamp + ".mp4")
         destination_blob_path = "frames/" + filename
         blob = storage.blob(destination_blob_path)
-        blob.upload_from_string(bytes, content_type='image/jpg')
+        blob.upload_from_string(bytes, content_type='video/mp4')
         blob.make_public()
         print("File added successfully")
+        return blob.public_url
     except Exception as e:
         print(f"Error: {e}")
         return {"message": "Frame not added successfully"}
+
+def get_data_from_firestore(collection, doc_id, db = None):
+    if db is None:
+        db = init_firestore('.env')
+    doc_ref = db.collection(collection).document(doc_id)
+    doc = doc_ref.get()
+    if doc.exists:
+        return doc.to_dict()
+    else:
+        return {"message": "No such document!"}
