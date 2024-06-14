@@ -52,10 +52,10 @@ def add_driver_video(bytes, driver_id, timestamp, storage = None):
         storage = init_storage('.env')
     print(type(storage))
     try:
-        filename = str(driver_id + "_" + timestamp + ".mp4")
+        filename = str(driver_id + "_" + timestamp + ".avi")
         destination_blob_path = "frames/" + filename
         blob = storage.blob(destination_blob_path)
-        blob.upload_from_string(bytes, content_type='video/mp4')
+        blob.upload_from_string(bytes, content_type='video/avi')
         blob.make_public()
         print("File added successfully")
         return blob.public_url
