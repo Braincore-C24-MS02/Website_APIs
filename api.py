@@ -30,7 +30,11 @@ async def root():
 
 @app.post("/send/send-to-firestore")
 async def add_data_to_firestore(collection, data = Body(...)):
-    add_test_data(collection_name=collection, data=data, db=db)
+    timestamp_url = "http://worldtimeapi.org/api/timezone/Asia/Jakarta"
+    response = requests.get(timestamp_url).json()
+    timestamp = str(parse_datetime(response['datetime']))
+    data.update({"timestamp": timestamp})
+    add_data(collection_name=collection, data=data, db=db)
     return {"message": "Data added successfully"}
 
 @app.post("/send/send-data")

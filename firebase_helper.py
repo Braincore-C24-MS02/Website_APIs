@@ -39,7 +39,7 @@ def init_storage(env_file, app = None):
     storage_instance = storage.bucket(name="bangkit-capstone-dms.appspot.com", app=app)
     return storage_instance
 
-def add_test_data(collection_name, data, db = None):
+def add_data(collection_name, data, db = None):
     if db is None:
         db = init_firestore('.env')
     # Add a new document with a generated ID
